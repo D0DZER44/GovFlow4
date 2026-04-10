@@ -282,6 +282,46 @@ async function testeSalvar() {
     alert("Salvou!");
   }
 }
+</script><!-- SEU HTML TODO ACIMA -->
+
+<!-- 👇 COLE AQUI -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabase = window.supabase.createClient(
+  "SUA_URL_AQUI",
+  "SUA_KEY_AQUI"
+);
+
+async function capturarESalvar() {
+  let atendimentos = document.getElementById("kpi-atend").innerText;
+  let fila = document.getElementById("kpi-fila").innerText;
+
+  const { error } = await supabase
+    .from("registros")
+    .insert([
+      {
+        unidade: "Centro",
+        atendimentos: parseInt(atendimentos),
+        fila: parseInt(fila)
+      }
+    ]);
+
+  if(error){
+    console.log(error);
+    alert("Erro");
+  } else {
+    alert("Salvou!");
+  }
+}
 </script>
+
+<button onclick="capturarESalvar()" 
+style="position:fixed;bottom:20px;right:20px;padding:12px;background:#2ecc8a;color:#000;">
+Salvar
+</button>
+
+</body>
+</html>
 </body>
 </html>
