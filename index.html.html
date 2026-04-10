@@ -795,3 +795,19 @@ new Chart(document.getElementById('chartEvolucao'), {
 </script>
 </body>
 </html>
+
+async function teste() {
+  const { data, error } = await supabase
+    .from("registros")
+    .insert([
+      { unidade: "Teste", atendimentos: 1, fila: 2 }
+    ]);
+
+  if(error){
+    console.log("Erro:", error);
+  } else {
+    console.log("Funcionou!");
+  }
+}
+
+teste();
