@@ -792,15 +792,22 @@ new Chart(document.getElementById('chartEvolucao'), {
     }
   }
 });
-</script>
-</body>
-</html>
+</script><!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+// 🔌 CONEXÃO
+const supabase = window.supabase.createClient(
+  "ngpowwbzgxcxfmscyxjq",
+  "sb_publishable_5UYnKB5ucFBNg4t0j-Nuwg_7TLApNtz"
+);
+
+// 🧪 TESTE AUTOMÁTICO
 async function teste() {
   const { data, error } = await supabase
     .from("registros")
     .insert([
-      { unidade: "Teste", atendimentos: 1, fila: 2 }
+      { unidade: "Centro", atendimentos: 10, fila: 5 }
     ]);
 
   if(error){
@@ -811,3 +818,7 @@ async function teste() {
 }
 
 teste();
+</script>
+</body>
+</html>
+
