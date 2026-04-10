@@ -1,798 +1,262 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GOVFLOW — Central de Comando · CadÚnico</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<style>
-:root{
-  --bg:#080b10;
-  --bg2:#0e1218;
-  --bg3:#141920;
-  --bg4:#1c2330;
-  --bg5:#222b38;
-  --border:rgba(255,255,255,0.06);
-  --border2:rgba(255,255,255,0.11);
-  --text:#dde3ee;
-  --text2:#7a8499;
-  --text3:#444e62;
-  --green:#2ecc8a;
-  --green-bg:rgba(46,204,138,0.09);
-  --green-border:rgba(46,204,138,0.2);
-  --amber:#f0a500;
-  --amber-bg:rgba(240,165,0,0.09);
-  --amber-border:rgba(240,165,0,0.2);
-  --red:#e8484a;
-  --red-bg:rgba(232,72,74,0.09);
-  --red-border:rgba(232,72,74,0.2);
-  --blue:#3b8cf7;
-  --blue-bg:rgba(59,140,247,0.09);
-  --blue-border:rgba(59,140,247,0.2);
-  --teal:#1fc8b8;
-  --teal-bg:rgba(31,200,184,0.09);
-  --purple:#9b7fe8;
-  --purple-bg:rgba(155,127,232,0.09);
-  --radius:10px;
-  --radius-lg:14px;
-  --font:'DM Sans',sans-serif;
-  --display:'Syne',sans-serif;
-  --mono:'DM Mono',monospace;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13.5px;line-height:1.5;min-height:100vh}
-
-/* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;backdrop-filter:blur(8px)}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3b8cf7,#1fc8b8);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:13px;color:#fff;letter-spacing:-.5px}
-.logo-name{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.4px;color:#fff}
-.logo-dot{width:5px;height:5px;border-radius:50%;background:var(--green);margin:0 4px;animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-.logo-sub{font-size:11px;color:var(--text2);letter-spacing:.3px}
-.topbar-center{display:flex;align-items:center;gap:6px}
-.topbar-time{font-family:var(--mono);font-size:13px;color:var(--text2)}
-.topbar-date{font-size:12px;color:var(--text3);margin-left:8px}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.tb-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
-.tb-badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
-.tb-badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
-.tb-badge-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-.avatar{width:30px;height:30px;border-radius:50%;background:var(--blue-bg);border:1px solid var(--blue-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--blue);font-family:var(--display)}
-
-/* KPI BAR */
-.kpi-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
-.kpi-cell{background:var(--bg2);padding:14px 18px;display:flex;flex-direction:column;gap:5px;transition:background .15s}
-.kpi-cell:hover{background:var(--bg3)}
-.kpi-cell-label{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--text3);font-weight:500}
-.kpi-cell-value{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:-1px;line-height:1}
-.kpi-cell-sub{font-size:11px;display:flex;align-items:center;gap:5px}
-.pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
-.pill-green{background:var(--green-bg);color:var(--green)}
-.pill-red{background:var(--red-bg);color:var(--red)}
-.pill-amber{background:var(--amber-bg);color:var(--amber)}
-.pill-blue{background:var(--blue-bg);color:var(--blue)}
-
-/* LAYOUT */
-.body-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:16px;align-items:start}
-
-/* CARDS */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden}
-.card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:7px}
-.card-title-icon{width:16px;height:16px;flex-shrink:0}
-.card-body{padding:14px 16px}
-
-/* TAREFAS */
-.task-section{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--text3);font-weight:600;margin:10px 0 6px;padding:0 16px}
-.task-item{display:flex;align-items:flex-start;gap:9px;padding:8px 16px;border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer}
-.task-item:last-child{border-bottom:none}
-.task-item:hover{background:var(--bg3)}
-.task-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
-.task-body{flex:1}
-.task-name{font-size:13px;color:var(--text);line-height:1.3}
-.task-meta{font-size:11px;color:var(--text3);margin-top:1px}
-.task-badge{font-size:10px;padding:2px 7px;border-radius:10px;white-space:nowrap;font-weight:500;flex-shrink:0}
-.done{text-decoration:line-through;opacity:.45}
-
-/* AO VIVO */
-.live-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border)}
-.live-row:last-child{border-bottom:none}
-.live-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.live-body{flex:1}
-.live-title{font-size:13px;font-weight:500;color:var(--text)}
-.live-desc{font-size:11px;color:var(--text2);margin-top:1px}
-.live-value{font-family:var(--mono);font-size:13px;font-weight:500;flex-shrink:0}
-
-/* UNIDADES */
-.unidade-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin:0 14px 10px;padding:12px 14px;transition:all .2s;cursor:pointer}
-.unidade-card:hover{border-color:var(--border2);background:var(--bg4)}
-.unidade-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.unidade-name{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text)}
-.unidade-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.u-metric{background:var(--bg2);border-radius:6px;padding:7px 8px;border:1px solid var(--border)}
-.u-metric-label{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
-.u-metric-value{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text)}
-.u-bar{height:3px;border-radius:2px;background:var(--bg5);margin-top:8px;overflow:hidden}
-.u-bar-fill{height:100%;border-radius:2px;transition:width .5s}
-.status-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
-
-/* AÇÕES INTELIGENTES */
-.acao-item{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
-.acao-item:last-child{border-bottom:none}
-.acao-num{font-family:var(--display);font-size:18px;font-weight:700;color:var(--text3);line-height:1;min-width:24px}
-.acao-body{flex:1}
-.acao-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.3}
-.acao-desc{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.4}
-.acao-impact{font-size:11px;margin-top:5px}
-.acao-priority{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;flex-shrink:0;margin-top:2px}
-
-/* LEITURA */
-.leitura-box{padding:14px 16px}
-.leitura-text{font-size:13px;color:var(--text2);line-height:1.7}
-.leitura-highlight{color:var(--text);font-weight:500}
-.leitura-alert{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius);padding:10px 14px;margin-top:10px;font-size:12px;color:var(--red);line-height:1.5}
-.leitura-ok{background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--green);line-height:1.5}
-
-/* DOCUMENTOS */
-.doc-item{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer}
-.doc-item:last-child{border-bottom:none}
-.doc-item:hover{background:var(--bg3)}
-.doc-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.doc-body{flex:1}
-.doc-title{font-size:13px;font-weight:500;color:var(--text)}
-.doc-meta{font-size:11px;color:var(--text3);margin-top:1px}
-.doc-count{font-family:var(--mono);font-size:12px;font-weight:500;padding:2px 8px;border-radius:6px;border:1px solid var(--border)}
-
-/* IMPACTO */
-.cenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px}
-.cenario{border-radius:var(--radius);padding:14px;text-align:center;border:1px solid}
-.cenario-label{font-size:10px;letter-spacing:.7px;text-transform:uppercase;font-weight:600;margin-bottom:6px}
-.cenario-value{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-1px;line-height:1;margin-bottom:4px}
-.cenario-desc{font-size:11px;line-height:1.4}
-
-/* GRÁFICOS */
-.charts-section{padding:0 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.chart-wrap{position:relative;width:100%}
-
-/* AÇÕES MÓVEIS */
-.mutirao-item{display:flex;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);align-items:flex-start}
-.mutirao-item:last-child{border-bottom:none}
-.mutirao-date{background:var(--bg4);border-radius:7px;padding:6px 8px;text-align:center;min-width:40px;flex-shrink:0}
-.mutirao-day{font-family:var(--display);font-size:16px;font-weight:700;line-height:1;color:var(--text)}
-.mutirao-mon{font-size:9px;text-transform:uppercase;color:var(--text3);letter-spacing:.5px}
-.mutirao-body{flex:1}
-.mutirao-title{font-size:13px;font-weight:500;color:var(--text)}
-.mutirao-desc{font-size:11px;color:var(--text2);margin-top:2px}
-
-/* BOTTOM SECTIONS */
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 16px 16px}
-.full-row{padding:0 16px 16px}
-
-/* DIVIDER */
-.section-divider{display:flex;align-items:center;gap:10px;padding:16px 16px 4px;font-size:10px;letter-spacing:.9px;text-transform:uppercase;color:var(--text3);font-weight:600}
-.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.section-divider::before{display:none}
-
-/* URGENTES (ao vivo) */
-.urgente-item{display:flex;align-items:center;gap:9px;padding:8px 16px;border-bottom:1px solid var(--border)}
-.urgente-item:last-child{border-bottom:none}
-.urgente-hora{font-family:var(--mono);font-size:11px;color:var(--text3);min-width:40px}
-.urgente-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.urgente-text{font-size:13px;color:var(--text);flex:1}
-.urgente-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px}
-
-/* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.card{animation:fadeUp .3s ease both}
-.kpi-cell:nth-child(1){animation:fadeUp .2s .05s ease both}
-.kpi-cell:nth-child(2){animation:fadeUp .2s .1s ease both}
-.kpi-cell:nth-child(3){animation:fadeUp .2s .15s ease both}
-.kpi-cell:nth-child(4){animation:fadeUp .2s .2s ease both}
-.kpi-cell:nth-child(5){animation:fadeUp .2s .25s ease both}
-
-/* RESPONSIVE */
-@media(max-width:1100px){.body-grid{grid-template-columns:1fr 1fr}.charts-section{grid-template-columns:1fr}}
-@media(max-width:720px){.body-grid{grid-template-columns:1fr}.kpi-bar{grid-template-columns:repeat(3,1fr)}.cenario-grid{grid-template-columns:1fr}}
-</style>
+<title>GOVFLOW</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="logo">
-    <div class="logo-mark">GF</div>
-    <span class="logo-name">GOVFLOW</span>
-    <div class="logo-dot"></div>
-    <span class="logo-sub">CadÚnico · São Sebastião</span>
+<body class="bg-black text-white">
+
+<div class="p-6 space-y-6">
+
+<!-- HEADER -->
+<div class="flex justify-between items-center">
+  <h1 class="text-3xl font-bold">GOVFLOW</h1>
+  <span class="text-gray-400 text-sm">CadÚnico • Integração gov.br • Tempo real</span>
+</div>
+
+<!-- KPIs -->
+<div class="grid grid-cols-5 gap-4">
+  <div class="bg-gray-900 p-4 rounded-2xl">
+    <p class="text-gray-400">Atendimentos Hoje</p>
+    <p class="text-3xl font-bold">164</p>
   </div>
-  <div class="topbar-center">
-    <span class="topbar-time" id="relogio">--:--:--</span>
-    <span class="topbar-date" id="data-hoje">--</span>
+  <div class="bg-gray-900 p-4 rounded-2xl">
+    <p class="text-gray-400">Famílias Ativas</p>
+    <p class="text-3xl font-bold">8.420</p>
   </div>
-  <div class="topbar-right">
-    <span class="tb-badge tb-badge-red">3 Urgências</span>
-    <span class="tb-badge tb-badge-amber">Demanda Alta</span>
-    <span class="tb-badge tb-badge-green">Sistema OK</span>
-    <div class="avatar">CM</div>
+  <div class="bg-red-900 p-4 rounded-2xl">
+    <p>Fila Total</p>
+    <p class="text-3xl font-bold">48</p>
+  </div>
+  <div class="bg-yellow-800 p-4 rounded-2xl">
+    <p>Demanda</p>
+    <p class="text-2xl font-bold">Alta</p>
+  </div>
+  <div class="bg-green-900 p-4 rounded-2xl">
+    <p>Atualizações Pendentes</p>
+    <p class="text-3xl font-bold">1.230</p>
   </div>
 </div>
 
-<!-- KPI BAR -->
-<div class="kpi-bar">
-  <div class="kpi-cell">
-    <div class="kpi-cell-label">Atendimentos do dia</div>
-    <div class="kpi-cell-value" style="color:var(--green)" id="kpi-atend">127</div>
-    <div class="kpi-cell-sub"><span class="pill pill-green">▲ 14%</span> <span style="color:var(--text3)">vs ontem (111)</span></div>
-  </div>
-  <div class="kpi-cell">
-    <div class="kpi-cell-label">Fila atual</div>
-    <div class="kpi-cell-value" style="color:var(--amber)" id="kpi-fila">38</div>
-    <div class="kpi-cell-sub"><span class="pill pill-amber">Espera ~47min</span></div>
-  </div>
-  <div class="kpi-cell">
-    <div class="kpi-cell-label">Nível de demanda</div>
-    <div class="kpi-cell-value" style="color:var(--red);font-size:22px;padding-top:4px">ALTA</div>
-    <div class="kpi-cell-sub"><span class="pill pill-red">Acima do limite</span></div>
-  </div>
-  <div class="kpi-cell">
-    <div class="kpi-cell-label">Funcionários ativos</div>
-    <div class="kpi-cell-value">9<span style="font-size:16px;color:var(--text3);font-weight:400">/12</span></div>
-    <div class="kpi-cell-sub"><span class="pill pill-amber">3 ausentes hoje</span></div>
-  </div>
-  <div class="kpi-cell">
-    <div class="kpi-cell-label">Atualizações pendentes</div>
-    <div class="kpi-cell-value" style="color:var(--red)">214</div>
-    <div class="kpi-cell-sub"><span class="pill pill-red">Prazo: 15 dias</span></div>
-  </div>
-</div>
+<!-- GRID -->
+<div class="grid grid-cols-3 gap-6">
 
-<!-- CORPO PRINCIPAL -->
-<div class="body-grid">
+<!-- COLUNA 1 -->
+<div class="space-y-6">
 
-  <!-- ===== COLUNA 1: OPERAÇÃO ===== -->
-  <div>
+<!-- AFAZERES -->
+<div class="bg-gray-900 p-4 rounded-2xl border border-gray-800">
+  <h2 class="font-semibold mb-2">Afazeres (Diário / Semanal)</h2>
 
-    <!-- TAREFAS -->
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">
-          <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          Afazeres
-        </div>
-        <span class="pill pill-red">5 pendentes</span>
-      </div>
-      <div class="task-section">HOJE</div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--red)"></div>
-        <div class="task-body"><div class="task-name">Responder memorando da Diretoria</div><div class="task-meta">Prazo: 12h00 · Assunto: metas mensais</div></div>
-        <span class="task-badge" style="background:var(--red-bg);color:var(--red)">Urgente</span>
-      </div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--red)"></div>
-        <div class="task-body"><div class="task-name">Enviar relatório de atendimentos ao SEDS</div><div class="task-meta">Prazo: 14h00 · Mensal obrigatório</div></div>
-        <span class="task-badge" style="background:var(--red-bg);color:var(--red)">Urgente</span>
-      </div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--amber)"></div>
-        <div class="task-body"><div class="task-name">Folha de ponto — assinar e digitalizar</div><div class="task-meta">Prazo: 17h00 · Recursos Humanos</div></div>
-        <span class="task-badge" style="background:var(--amber-bg);color:var(--amber)">Atenção</span>
-      </div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--amber)"></div>
-        <div class="task-body"><div class="task-name">Repor estoque de papel A4 — unidade Centro</div><div class="task-meta">Estoque crítico · 2 resmas restantes</div></div>
-        <span class="task-badge" style="background:var(--amber-bg);color:var(--amber)">Atenção</span>
-      </div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--green)"></div>
-        <div class="task-body"><div class="task-name done">Abrir sistema SIBEC pela manhã</div><div class="task-meta" style="opacity:.5">Concluído às 08:12</div></div>
-        <span class="task-badge" style="background:var(--green-bg);color:var(--green)">Feito</span>
-      </div>
-      <div class="task-section" style="margin-top:6px">SEMANA</div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--red)"></div>
-        <div class="task-body"><div class="task-name">Reunião com Assistência Social — bloqueios BF</div><div class="task-meta">Quinta-feira 14h · Sala de reuniões</div></div>
-        <span class="task-badge" style="background:var(--red-bg);color:var(--red)">Urgente</span>
-      </div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--amber)"></div>
-        <div class="task-body"><div class="task-name">Capacitação de operadores — novos campos</div><div class="task-meta">Sexta-feira 09h · Plataforma MDS</div></div>
-        <span class="task-badge" style="background:var(--amber-bg);color:var(--amber)">Atenção</span>
-      </div>
-      <div class="task-item">
-        <div class="task-dot" style="background:var(--green)"></div>
-        <div class="task-body"><div class="task-name done">Atualizar senhas dos terminais</div><div class="task-meta" style="opacity:.5">Concluído segunda-feira</div></div>
-        <span class="task-badge" style="background:var(--green-bg);color:var(--green)">Feito</span>
-      </div>
+  <div class="grid grid-cols-2 gap-4 text-sm">
+
+    <div>
+      <p class="text-gray-400 mb-1">Hoje</p>
+      <ul class="space-y-2">
+        <li class="bg-red-800 p-2 rounded">Responder coordenação CRAS até 14h</li>
+        <li class="bg-yellow-700 p-2 rounded">Reunião interna equipe - 15h</li>
+        <li class="bg-yellow-700 p-2 rounded">Atualizar cadastros unipessoais</li>
+        <li class="bg-green-800 p-2 rounded">Organizar arquivos físicos</li>
+      </ul>
     </div>
 
-    <!-- AO VIVO -->
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">
-          <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Painel Ao Vivo
-        </div>
-        <div class="logo-dot" style="margin:0"></div>
-      </div>
-      <div class="live-row">
-        <div class="live-icon" style="background:var(--blue-bg);font-size:16px">🌤</div>
-        <div class="live-body"><div class="live-title">Clima — São Sebastião</div><div class="live-desc">Parcialmente nublado · Sem previsão de chuva</div></div>
-        <div class="live-value" style="color:var(--blue)">26°C</div>
-      </div>
-      <div class="live-row">
-        <div class="live-icon" style="background:var(--amber-bg);font-size:16px">🪑</div>
-        <div class="live-body"><div class="live-title">Fila de espera</div><div class="live-desc">38 pessoas · Tempo médio 47 min</div></div>
-        <div class="live-value" style="color:var(--amber)">Alta</div>
-      </div>
-      <div class="live-row">
-        <div class="live-icon" style="background:var(--green-bg);font-size:16px">💻</div>
-        <div class="live-body"><div class="live-title">Atendimentos em andamento</div><div class="live-desc">7 guichês ativos · 2 em pausa</div></div>
-        <div class="live-value" style="color:var(--green)">7</div>
-      </div>
-      <div class="live-row">
-        <div class="live-icon" style="background:var(--teal-bg);font-size:16px">📊</div>
-        <div class="live-body"><div class="live-title">Cadastros concluídos hoje</div><div class="live-desc">Novos: 14 · Atualizações: 38 · Revisões: 12</div></div>
-        <div class="live-value" style="color:var(--teal)">64</div>
-      </div>
-      <div style="padding:10px 16px 4px;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--text3);font-weight:600;border-top:1px solid var(--border);margin-top:4px">Tarefas urgentes com horário</div>
-      <div class="urgente-item">
-        <div class="urgente-hora">12:00</div>
-        <div class="urgente-dot" style="background:var(--red)"></div>
-        <div class="urgente-text">Responder memorando da Diretoria Municipal</div>
-        <span class="urgente-badge" style="background:var(--red-bg);color:var(--red)">Urgente</span>
-      </div>
-      <div class="urgente-item">
-        <div class="urgente-hora">14:00</div>
-        <div class="urgente-dot" style="background:var(--red)"></div>
-        <div class="urgente-text">Enviar relatório mensal ao SEDS/SP</div>
-        <span class="urgente-badge" style="background:var(--red-bg);color:var(--red)">Urgente</span>
-      </div>
-      <div class="urgente-item">
-        <div class="urgente-hora">15:30</div>
-        <div class="urgente-dot" style="background:var(--amber)"></div>
-        <div class="urgente-text">Acompanhar entrega de papel A4 — estoque</div>
-        <span class="urgente-badge" style="background:var(--amber-bg);color:var(--amber)">Atenção</span>
-      </div>
-      <div class="urgente-item">
-        <div class="urgente-hora">17:00</div>
-        <div class="urgente-dot" style="background:var(--amber)"></div>
-        <div class="urgente-text">Folha de ponto — assinar e digitalizar</div>
-        <span class="urgente-badge" style="background:var(--amber-bg);color:var(--amber)">Atenção</span>
-      </div>
-    </div>
-
-    <!-- AÇÕES MÓVEIS -->
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">
-          <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          Ações Móveis — Mutirões e Visitas
-        </div>
-      </div>
-      <div class="mutirao-item">
-        <div class="mutirao-date"><div class="mutirao-day">14</div><div class="mutirao-mon">Mai</div></div>
-        <div class="mutirao-body">
-          <div class="mutirao-title">Mutirão CadÚnico — Bairro Boiçucanga</div>
-          <div class="mutirao-desc">Objetivo: cadastrar 80 famílias sem acesso presencial · 2 cadastradores + van</div>
-        </div>
-        <span class="pill pill-amber">Planejado</span>
-      </div>
-      <div class="mutirao-item">
-        <div class="mutirao-date"><div class="mutirao-day">17</div><div class="mutirao-mon">Mai</div></div>
-        <div class="mutirao-body">
-          <div class="mutirao-title">Visita domiciliar — Famílias com bloqueio BF</div>
-          <div class="mutirao-desc">23 famílias com pendência de documentação · Assistente social + cadastrador</div>
-        </div>
-        <span class="pill pill-red">Urgente</span>
-      </div>
-      <div class="mutirao-item">
-        <div class="mutirao-date"><div class="mutirao-day">21</div><div class="mutirao-mon">Mai</div></div>
-        <div class="mutirao-body">
-          <div class="mutirao-title">Mutirão Revisão Cadastral — Morro do Abrigo</div>
-          <div class="mutirao-desc">Objetivo: atualizar 60 cadastros vencidos · Prazo MDS: 31/05</div>
-        </div>
-        <span class="pill pill-amber">Planejado</span>
-      </div>
-      <div class="mutirao-item">
-        <div class="mutirao-date"><div class="mutirao-day">28</div><div class="mutirao-mon">Mai</div></div>
-        <div class="mutirao-body">
-          <div class="mutirao-title">Ação Itinerante — Praça Central (Canto do Mar)</div>
-          <div class="mutirao-desc">Orientação sobre Bolsa Família e NIS · Parceria com CRAS</div>
-        </div>
-        <span class="pill pill-green">Confirmado</span>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ===== COLUNA 2: TERRITÓRIO ===== -->
-  <div>
-
-    <!-- UNIDADES -->
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">
-          <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-          Unidades de Atendimento
-        </div>
-        <span class="pill pill-blue">4 unidades</span>
-      </div>
-
-      <!-- Boiçucanga -->
-      <div class="unidade-card" style="border-left:3px solid var(--amber)">
-        <div class="unidade-header">
-          <div class="unidade-name">Boiçucanga</div>
-          <span class="status-badge" style="background:var(--amber-bg);color:var(--amber)">Atenção</span>
-        </div>
-        <div class="unidade-metrics">
-          <div class="u-metric"><div class="u-metric-label">População</div><div class="u-metric-value">9.200</div></div>
-          <div class="u-metric"><div class="u-metric-label">Famílias CAD</div><div class="u-metric-value">1.480</div></div>
-          <div class="u-metric"><div class="u-metric-label">Atend. hoje</div><div class="u-metric-value" style="color:var(--amber)">22</div></div>
-          <div class="u-metric"><div class="u-metric-label">Cobertura</div><div class="u-metric-value" style="color:var(--amber)">61%</div></div>
-        </div>
-        <div class="u-bar"><div class="u-bar-fill" style="width:61%;background:var(--amber)"></div></div>
-        <div style="font-size:11px;color:var(--text3);margin-top:6px">Bairros: Boiçucanga, Maresias, Paúba · 2 operadores</div>
-      </div>
-
-      <!-- Canto do Mar -->
-      <div class="unidade-card" style="border-left:3px solid var(--green)">
-        <div class="unidade-header">
-          <div class="unidade-name">Canto do Mar</div>
-          <span class="status-badge" style="background:var(--green-bg);color:var(--green)">OK</span>
-        </div>
-        <div class="unidade-metrics">
-          <div class="u-metric"><div class="u-metric-label">População</div><div class="u-metric-value">6.800</div></div>
-          <div class="u-metric"><div class="u-metric-label">Famílias CAD</div><div class="u-metric-value">940</div></div>
-          <div class="u-metric"><div class="u-metric-label">Atend. hoje</div><div class="u-metric-value" style="color:var(--green)">31</div></div>
-          <div class="u-metric"><div class="u-metric-label">Cobertura</div><div class="u-metric-value" style="color:var(--green)">82%</div></div>
-        </div>
-        <div class="u-bar"><div class="u-bar-fill" style="width:82%;background:var(--green)"></div></div>
-        <div style="font-size:11px;color:var(--text3);margin-top:6px">Bairros: Canto do Mar, Juquehy, Juréia · 3 operadores</div>
-      </div>
-
-      <!-- Centro -->
-      <div class="unidade-card" style="border-left:3px solid var(--red)">
-        <div class="unidade-header">
-          <div class="unidade-name">Centro</div>
-          <span class="status-badge" style="background:var(--red-bg);color:var(--red)">Crítico</span>
-        </div>
-        <div class="unidade-metrics">
-          <div class="u-metric"><div class="u-metric-label">População</div><div class="u-metric-value">18.400</div></div>
-          <div class="u-metric"><div class="u-metric-label">Famílias CAD</div><div class="u-metric-value">2.870</div></div>
-          <div class="u-metric"><div class="u-metric-label">Atend. hoje</div><div class="u-metric-value" style="color:var(--red)">58</div></div>
-          <div class="u-metric"><div class="u-metric-label">Cobertura</div><div class="u-metric-value" style="color:var(--red)">44%</div></div>
-        </div>
-        <div class="u-bar"><div class="u-bar-fill" style="width:44%;background:var(--red)"></div></div>
-        <div style="font-size:11px;color:var(--text3);margin-top:6px">Bairros: Centro, Topolândia, Arrastão · 3 operadores · <span style="color:var(--red)">1 ausente hoje</span></div>
-      </div>
-
-      <!-- Morro do Abrigo -->
-      <div class="unidade-card" style="border-left:3px solid var(--red);margin-bottom:4px">
-        <div class="unidade-header">
-          <div class="unidade-name">Morro do Abrigo</div>
-          <span class="status-badge" style="background:var(--red-bg);color:var(--red)">Crítico</span>
-        </div>
-        <div class="unidade-metrics">
-          <div class="u-metric"><div class="u-metric-label">População</div><div class="u-metric-value">5.100</div></div>
-          <div class="u-metric"><div class="u-metric-label">Famílias CAD</div><div class="u-metric-value">1.210</div></div>
-          <div class="u-metric"><div class="u-metric-label">Atend. hoje</div><div class="u-metric-value" style="color:var(--red)">16</div></div>
-          <div class="u-metric"><div class="u-metric-label">Cobertura</div><div class="u-metric-value" style="color:var(--red)">38%</div></div>
-        </div>
-        <div class="u-bar"><div class="u-bar-fill" style="width:38%;background:var(--red)"></div></div>
-        <div style="font-size:11px;color:var(--text3);margin-top:6px">Bairros: Morro do Abrigo, Barra do Una · 2 operadores · <span style="color:var(--red)">acesso difícil</span></div>
-      </div>
-    </div>
-
-    <!-- DOCUMENTOS -->
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">
-          <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Documentos e Processos
-        </div>
-      </div>
-      <div class="doc-item">
-        <div class="doc-icon" style="background:var(--red-bg)">📋</div>
-        <div class="doc-body"><div class="doc-title">Revisões Cadastrais — Pendentes</div><div class="doc-meta">Prazo MDS: 31/05 · Prioridade máxima</div></div>
-        <div class="doc-count" style="background:var(--red-bg);color:var(--red);border-color:var(--red-border)">214</div>
-      </div>
-      <div class="doc-item">
-        <div class="doc-icon" style="background:var(--amber-bg)">🔒</div>
-        <div class="doc-body"><div class="doc-title">Bloqueios Bolsa Família — Análise</div><div class="doc-meta">Aguardando documentação das famílias</div></div>
-        <div class="doc-count" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)">47</div>
-      </div>
-      <div class="doc-item">
-        <div class="doc-icon" style="background:var(--amber-bg)">📝</div>
-        <div class="doc-body"><div class="doc-title">Novos Cadastros — Em análise</div><div class="doc-meta">Aguardando validação de renda e composição familiar</div></div>
-        <div class="doc-count" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)">83</div>
-      </div>
-      <div class="doc-item">
-        <div class="doc-icon" style="background:var(--green-bg)">✅</div>
-        <div class="doc-body"><div class="doc-title">NIS Emitidos — Semana atual</div><div class="doc-meta">Processados e enviados ao Ministério</div></div>
-        <div class="doc-count" style="background:var(--green-bg);color:var(--green);border-color:var(--green-border)">62</div>
-      </div>
-      <div class="doc-item">
-        <div class="doc-icon" style="background:var(--blue-bg)">🔄</div>
-        <div class="doc-body"><div class="doc-title">Transferências / Migrações de Município</div><div class="doc-meta">Famílias vindas de outros municípios</div></div>
-        <div class="doc-count" style="background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)">18</div>
-      </div>
-      <div class="doc-item">
-        <div class="doc-icon" style="background:var(--purple-bg)">🏥</div>
-        <div class="doc-body"><div class="doc-title">Vinculação a Programas Sociais — BPC / BF</div><div class="doc-meta">Encaminhamentos ao CRAS e INSS</div></div>
-        <div class="doc-count" style="background:var(--purple-bg);color:var(--purple);border-color:rgba(155,127,232,0.2)">31</div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ===== COLUNA 3: GESTÃO E DECISÃO ===== -->
-  <div>
-
-    <!-- AÇÕES INTELIGENTES -->
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">
-          <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          Ações Inteligentes
-        </div>
-        <span class="pill pill-blue">6 sugestões</span>
-      </div>
-      <div class="acao-item">
-        <div class="acao-num">#1</div>
-        <div class="acao-body">
-          <div class="acao-title">Abrir guichê extra no Centro imediatamente</div>
-          <div class="acao-desc">Unidade Centro com fila crítica: 58 atendimentos e 1 operador ausente. Realocar um funcionário de outra unidade reduz espera em ~35 minutos.</div>
-          <div class="acao-impact"><span style="color:var(--green)">Impacto: -35min de espera · 14 atendimentos a mais</span></div>
-        </div>
-        <span class="acao-priority" style="background:var(--red-bg);color:var(--red)">Urgente</span>
-      </div>
-      <div class="acao-item">
-        <div class="acao-num">#2</div>
-        <div class="acao-body">
-          <div class="acao-title">Aumentar cadastradores no Morro do Abrigo</div>
-          <div class="acao-desc">Cobertura de 38% com 1.210 famílias cadastradas. Acrescentar 1 cadastrador por 2 semanas eleva cobertura para ~60% e reduz risco de prazo MDS.</div>
-          <div class="acao-impact"><span style="color:var(--amber)">Impacto: +120 cadastros antes do prazo de 31/05</span></div>
-        </div>
-        <span class="acao-priority" style="background:var(--red-bg);color:var(--red)">Urgente</span>
-      </div>
-      <div class="acao-item">
-        <div class="acao-num">#3</div>
-        <div class="acao-body">
-          <div class="acao-title">Redistribuir demanda entre unidades</div>
-          <div class="acao-desc">Centro sobrecarregado (58 atend.) vs Canto do Mar com capacidade ociosa. Orientar moradores do entorno a usar Canto do Mar via comunicado no WhatsApp da secretaria.</div>
-          <div class="acao-impact"><span style="color:var(--green)">Impacto: equilíbrio de carga entre unidades</span></div>
-        </div>
-        <span class="acao-priority" style="background:var(--amber-bg);color:var(--amber)">Hoje</span>
-      </div>
-      <div class="acao-item">
-        <div class="acao-num">#4</div>
-        <div class="acao-body">
-          <div class="acao-title">Repor papel A4 antes do fim do dia</div>
-          <div class="acao-desc">Estoque crítico na unidade Centro: 2 resmas restantes. Consumo médio: 1 resma/dia. Compra de emergência ou remanejamento de outra unidade necessário hoje.</div>
-          <div class="acao-impact"><span style="color:var(--amber)">Risco: parada operacional amanhã</span></div>
-        </div>
-        <span class="acao-priority" style="background:var(--amber-bg);color:var(--amber)">Hoje</span>
-      </div>
-      <div class="acao-item">
-        <div class="acao-num">#5</div>
-        <div class="acao-body">
-          <div class="acao-title">Renovar 2 computadores da unidade Boiçucanga</div>
-          <div class="acao-desc">Máquinas com mais de 7 anos causando lentidão no sistema Cadastra+. Operadores relatam travamentos. Solicitar ao TI ou pregão de locação.</div>
-          <div class="acao-impact"><span style="color:var(--blue)">Impacto: +30% de velocidade de atendimento</span></div>
-        </div>
-        <span class="acao-priority" style="background:var(--blue-bg);color:var(--blue)">Semana</span>
-      </div>
-      <div class="acao-item">
-        <div class="acao-num">#6</div>
-        <div class="acao-body">
-          <div class="acao-title">Iniciar contato com famílias em revisão</div>
-          <div class="acao-desc">214 famílias precisam de revisão até 31/05. Enviar SMS/WhatsApp com orientação sobre documentos necessários reduz taxa de retorno sem documentação.</div>
-          <div class="acao-impact"><span style="color:var(--green)">Impacto: economiza ~40 min/atendimento em pendências</span></div>
-        </div>
-        <span class="acao-priority" style="background:var(--green-bg);color:var(--green)">Planejamento</span>
-      </div>
-    </div>
-
-    <!-- LEITURA DE GESTÃO -->
-    <div class="card">
-      <div class="card-head">
-        <div class="card-title">
-          <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Leitura de Gestão — Análise do Dia
-        </div>
-      </div>
-      <div class="leitura-box">
-        <div class="leitura-text">
-          A operação desta quarta-feira apresenta <span class="leitura-highlight">demanda acima da capacidade nominal</span>. Com 127 atendimentos projetados para o dia e apenas 9 dos 12 funcionários ativos, o sistema está operando com <span class="leitura-highlight">25% menos capacidade humana</span>, o que explica a fila atual de 38 pessoas e o tempo médio de espera de 47 minutos — acima do parâmetro adequado de 30 minutos.
-          <br><br>
-          A <span class="leitura-highlight">unidade Centro</span> concentra o maior volume (58 atendimentos) e é o principal ponto de pressão do dia. O Morro do Abrigo, apesar de menor volume, apresenta cobertura crítica de 38% — indicando que a maior parte das famílias vulneráveis daquele território ainda não foi atingida.
-          <br><br>
-          As <span class="leitura-highlight">214 revisões pendentes</span> com prazo em 31 de maio representam o risco mais estrutural: descumprir o prazo do MDS pode resultar em bloqueio de benefícios para centenas de famílias vulneráveis e em advertência formal ao município.
-        </div>
-        <div class="leitura-alert">
-          <strong>Alerta:</strong> Se as revisões não forem iniciadas sistematicamente a partir de hoje, o prazo do MDS não será cumprido — impactando diretamente o Bolsa Família de até 214 famílias. Ação imediata recomendada: mutirão interno a partir de amanhã.
-        </div>
-        <div class="leitura-ok">
-          <strong>Ponto positivo:</strong> A unidade Canto do Mar opera bem (cobertura 82%) e pode absorver demanda excedente do Centro. Comunicado de orientação pode ser feito hoje sem custo adicional.
-        </div>
-      </div>
+    <div>
+      <p class="text-gray-400 mb-1">Semana</p>
+      <ul class="space-y-2">
+        <li class="bg-red-800 p-2 rounded">Enviar base CadÚnico ao Estado (sexta)</li>
+        <li class="bg-yellow-700 p-2 rounded">Planejar mutirão Topolândia</li>
+        <li class="bg-yellow-700 p-2 rounded">Reunião com Secretaria Social</li>
+        <li class="bg-green-800 p-2 rounded">Capacitação equipe (sistema)</li>
+      </ul>
     </div>
 
   </div>
 </div>
 
-<!-- IMPACTO FINANCEIRO -->
-<div class="full-row">
-  <div class="card" style="margin-bottom:0">
-    <div class="card-head">
-      <div class="card-title">
-        <svg class="card-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        Impacto Financeiro e Social — Cenários de Decisão
-      </div>
-    </div>
-    <div class="cenario-grid">
-      <div class="cenario" style="background:var(--red-bg);border-color:var(--red-border)">
-        <div class="cenario-label" style="color:var(--red)">Não agir</div>
-        <div class="cenario-value" style="color:var(--red)">-R$ 48.200</div>
-        <div class="cenario-desc" style="color:rgba(232,72,74,0.75)">Perda estimada em 30 dias: 214 famílias com benefício bloqueado por falta de revisão. Média de R$ 225/família · Risco de advertência do MDS e suspensão de repasse municipal.</div>
-      </div>
-      <div class="cenario" style="background:var(--amber-bg);border-color:var(--amber-border)">
-        <div class="cenario-label" style="color:var(--amber)">Ação parcial</div>
-        <div class="cenario-value" style="color:var(--amber)">-R$ 14.800</div>
-        <div class="cenario-desc" style="color:rgba(240,165,0,0.75)">Revisão de 50% das famílias (107 casos). Restante fica em risco. Reduz impacto a ~R$ 14.800 em benefícios afetados. Mutirão 1 vez por semana + comunicação por WhatsApp.</div>
-      </div>
-      <div class="cenario" style="background:var(--green-bg);border-color:var(--green-border)">
-        <div class="cenario-label" style="color:var(--green)">Ação completa</div>
-        <div class="cenario-value" style="color:var(--green)">R$ 0 de perda</div>
-        <div class="cenario-desc" style="color:rgba(46,204,138,0.75)">100% das revisões concluídas até 31/05. Zero bloqueios evitados, zero advertências. Custo operacional adicional estimado: R$ 3.200 (horas extras + deslocamentos de mutirão). ROI social: 15x.</div>
-      </div>
-    </div>
-  </div>
+<div class="bg-gray-900 p-4 rounded-2xl">
+<h2 class="font-semibold mb-2">Ao Vivo</h2>
+<p>☀️ 28°C</p>
+<p>Fila: <span class="text-red-400">48</span></p>
+<p>Atendendo: <span class="text-green-400">20</span></p>
+
+<div class="mt-3 space-y-2 text-sm">
+  <div class="bg-red-800 p-2 rounded">Responder diretor - Viva Leite até 15h</div>
+  <div class="bg-red-800 p-2 rounded">Enviar relatório CadÚnico ao Estado até 16h</div>
+  <div class="bg-yellow-700 p-2 rounded">Entrega folhas de ponto até 17h</div>
+  <div class="bg-yellow-700 p-2 rounded">Atualizar famílias unipessoais</div>
+  <div class="bg-green-800 p-2 rounded">Relatório semanal enviado</div>
+</div>
+</div>
+
+<div class="bg-gray-900 p-4 rounded-2xl">
+<h2 class="font-semibold mb-2">Ações Móveis</h2>
+<ul class="text-sm space-y-2">
+<li class="bg-blue-800 p-2 rounded">📍 Mutirão Topolândia - 12/04 (previsão: 120 atendimentos)</li>
+<li class="bg-blue-800 p-2 rounded">📍 Ação Maresias - 15/04 (demanda reprimida)</li>
+<li class="bg-blue-800 p-2 rounded">📍 Visita domiciliar - 18/04</li>
+</ul>
+</div>
+
+<div class="bg-gray-900 p-4 rounded-2xl">
+<h2 class="font-semibold mb-2">Documentos</h2>
+<div class="space-y-2 text-sm">
+  <div class="bg-red-800 p-2 rounded">Bolsa Família - 6 bloqueios</div>
+  <div class="bg-red-800 p-2 rounded">Atualizações atrasadas +24 meses</div>
+  <div class="bg-yellow-700 p-2 rounded">Revisões pendentes - 14</div>
+  <div class="bg-green-800 p-2 rounded">Inclusões hoje - 32</div>
+</div>
+</div>
+
+</div>
+
+<!-- COLUNA 2 -->
+<div class="space-y-4">
+
+<div class="bg-red-900 p-4 rounded-2xl">
+<h3 class="font-bold">Boiçucanga</h3>
+<p>População: ~26.000</p>
+<p>Famílias CadÚnico: 3.200</p>
+<p>Atendimentos: 68</p>
+<p>Índice: 0,26%</p>
+<p class="text-sm mt-2">⚠ Alta pressão + atualização pendente</p>
+</div>
+
+<div class="bg-yellow-800 p-4 rounded-2xl">
+<h3 class="font-bold">Canto do Mar</h3>
+<p>População: ~16.000</p>
+<p>Famílias CadÚnico: 2.800</p>
+<p>Atendimentos: 52</p>
+<p>Índice: 0,32%</p>
+</div>
+
+<div class="bg-yellow-800 p-4 rounded-2xl">
+<h3 class="font-bold">Centro</h3>
+<p>Fluxo urbano elevado</p>
+<p>Atendimentos: 30</p>
+<p>Índice: alto fluxo</p>
+</div>
+
+<div class="bg-green-800 p-4 rounded-2xl">
+<h3 class="font-bold">Morro do Abrigo</h3>
+<p>População: ~9.000</p>
+<p>Famílias CadÚnico: 1.400</p>
+<p>Atendimentos: 14</p>
+<p>Índice: 0,15%</p>
+</div>
+
+</div>
+
+<!-- COLUNA 3 -->
+<div class="space-y-6">
+
+<div class="bg-gray-900 p-4 rounded-2xl">
+<h2 class="font-semibold mb-2">Ações Inteligentes</h2>
+<ul class="space-y-2 text-sm">
+<li class="text-red-400">+2 cadastradores em Boiçucanga</li>
+<li class="text-red-400">Abrir guichê extra (13h–16h)</li>
+<li class="text-yellow-400">Redistribuir fluxo para Centro</li>
+<li class="text-yellow-400">Repor papel A4 e toner</li>
+<li class="text-yellow-400">Verificar lentidão sistema</li>
+<li class="text-green-400">Manter Morro do Abrigo</li>
+</ul>
+</div>
+
+<div class="bg-gray-900 p-4 rounded-2xl">
+<h2 class="font-semibold mb-2">Leitura de Gestão</h2>
+<p class="text-sm text-gray-300">
+A base do CadÚnico indica crescimento de famílias com cadastro desatualizado (>24 meses), concentradas na região sul.
+Boiçucanga apresenta maior volume proporcional e risco de atraso em benefícios.
+A estratégia ideal envolve mutirões territoriais e reforço de equipe temporário.
+Centro pode absorver picos operacionais.
+Morro do Abrigo deve ser usado como base de redistribuição.
+</p>
+</div>
+
+</div>
+
 </div>
 
 <!-- GRÁFICOS -->
-<div class="bottom-grid" style="margin-top:16px">
-  <div class="card" style="margin-bottom:0">
-    <div class="card-head">
-      <div class="card-title">Atendimentos por unidade — hoje</div>
+<div class="grid grid-cols-2 gap-6">
+
+<div class="bg-gray-900 p-4 rounded-2xl">
+<h2 class="mb-2">Atendimentos por Unidade</h2>
+<canvas id="chart1"></canvas>
+</div>
+
+<div class="bg-gray-900 p-4 rounded-2xl">
+<h2 class="mb-2">Evolução do Dia</h2>
+<canvas id="chart2"></canvas>
+</div>
+
+</div>
+
+<!-- IMPACTO FINANCEIRO -->
+<div class="bg-gray-900 p-4 rounded-2xl border border-gray-800">
+  <h2 class="mb-3 font-semibold">Impacto Financeiro Estimado (mensal)</h2>
+  <div class="grid grid-cols-3 gap-4 text-sm">
+
+    <div class="bg-red-900 p-3 rounded">
+      <p class="font-bold">Se NÃO agir</p>
+      <ul class="mt-2 space-y-1 text-gray-200">
+        <li>• Filas altas → horas extras: R$ 12k</li>
+        <li>• Retrabalho / erros: R$ 8k</li>
+        <li>• Benefícios atrasados (custos indiretos): R$ 15k</li>
+      </ul>
+      <p class="mt-2 font-bold text-red-300">Custo estimado: R$ 35k/mês</p>
     </div>
-    <div class="card-body">
-      <div class="chart-wrap" style="height:220px">
-        <canvas id="chartUnidades" role="img" aria-label="Atendimentos por unidade">Centro:58, Canto do Mar:31, Boiçucanga:22, Morro do Abrigo:16</canvas>
-      </div>
+
+    <div class="bg-yellow-800 p-3 rounded">
+      <p class="font-bold">Ações parciais</p>
+      <ul class="mt-2 space-y-1 text-gray-200">
+        <li>• Redistribuição de equipe</li>
+        <li>• Pequenos ajustes operacionais</li>
+      </ul>
+      <p class="mt-2 font-bold text-yellow-200">Economia estimada: R$ 10k – 20k/mês</p>
     </div>
-  </div>
-  <div class="card" style="margin-bottom:0">
-    <div class="card-head">
-      <div class="card-title">Evolução dos atendimentos ao longo do dia</div>
+
+    <div class="bg-green-900 p-3 rounded">
+      <p class="font-bold">Ação completa</p>
+      <ul class="mt-2 space-y-1 text-gray-200">
+        <li>• +2 atendentes estratégicos</li>
+        <li>• Mutirões territoriais</li>
+        <li>• Redução de filas e retrabalho</li>
+      </ul>
+      <p class="mt-2 font-bold text-green-300">Economia potencial: R$ 30k – 50k/mês</p>
     </div>
-    <div class="card-body">
-      <div class="chart-wrap" style="height:220px">
-        <canvas id="chartEvolucao" role="img" aria-label="Atendimentos por hora">Distribuição de atendimentos ao longo do expediente.</canvas>
-      </div>
-    </div>
+
   </div>
 </div>
 
-<!-- RODAPÉ -->
-<div style="padding:16px 20px;border-top:1px solid var(--border);margin-top:16px;display:flex;align-items:center;justify-content:space-between">
-  <div style="font-family:var(--display);font-size:12px;color:var(--text3)">GOVFLOW · Central de Comando CadÚnico · São Sebastião · v1.0</div>
-  <div style="font-size:11px;color:var(--text3)">Dados atualizados em tempo real · Sistema operacional</div>
 </div>
 
 <script>
-// RELÓGIO
-function atualizarRelogio(){
-  var now = new Date();
-  var h = String(now.getHours()).padStart(2,'0');
-  var m = String(now.getMinutes()).padStart(2,'0');
-  var s = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('relogio').textContent = h+':'+m+':'+s;
-  var dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-  var meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  document.getElementById('data-hoje').textContent = dias[now.getDay()]+', '+now.getDate()+' '+meses[now.getMonth()]+' '+now.getFullYear();
-}
-atualizarRelogio();
-setInterval(atualizarRelogio, 1000);
-
-// KPI CONTADOR ANIMADO
-function animateCounter(el, target) {
-  var start = 0;
-  var step = target / 40;
-  var timer = setInterval(function(){
-    start = Math.min(start + step, target);
-    el.textContent = Math.round(start);
-    if(start >= target) clearInterval(timer);
-  }, 30);
-}
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    animateCounter(document.getElementById('kpi-atend'), 127);
-    animateCounter(document.getElementById('kpi-fila'), 38);
-  }, 200);
+new Chart(document.getElementById('chart1'), {
+ type: 'bar',
+ data: {
+   labels: ['Boiçucanga','Canto do Mar','Centro','Morro'],
+   datasets: [{
+     label: 'Atendimentos',
+     data: [68,52,30,14]
+   }]
+ }
 });
 
-// CHART 1 — UNIDADES
-new Chart(document.getElementById('chartUnidades'), {
-  type: 'bar',
-  data: {
-    labels: ['Centro', 'Canto do Mar', 'Boiçucanga', 'Morro do Abrigo'],
-    datasets: [{
-      label: 'Atendimentos',
-      data: [58, 31, 22, 16],
-      backgroundColor: ['#e8484a', '#2ecc8a', '#f0a500', '#e8484a'],
-      borderRadius: 6,
-      borderSkipped: false
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: function(c){ return c.raw + ' atendimentos'; } } }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: { color: '#444e62', font: { size: 11, family: "'DM Mono', monospace" } },
-        grid: { color: 'rgba(255,255,255,0.04)' }
-      },
-      x: {
-        ticks: { color: '#7a8499', font: { size: 11 } },
-        grid: { display: false }
-      }
-    }
-  }
+new Chart(document.getElementById('chart2'), {
+ type: 'line',
+ data: {
+   labels: ['8h','10h','12h','14h','16h'],
+   datasets: [{
+     label: 'Atendimentos',
+     data: [20,55,90,130,164]
+   }]
+ }
 });
-
-// CHART 2 — EVOLUÇÃO AO LONGO DO DIA
-var horas = ['07h','08h','09h','10h','11h','12h','13h','14h','15h','16h','17h'];
-var atend = [4, 11, 18, 21, 17, 8, 14, 16, 9, 7, 2];
-new Chart(document.getElementById('chartEvolucao'), {
-  type: 'line',
-  data: {
-    labels: horas,
-    datasets: [{
-      label: 'Atendimentos',
-      data: atend,
-      borderColor: '#3b8cf7',
-      backgroundColor: 'rgba(59,140,247,0.08)',
-      fill: true,
-      tension: 0.45,
-      pointRadius: 4,
-      pointBackgroundColor: '#3b8cf7',
-      pointBorderColor: '#080b10',
-      pointBorderWidth: 2
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: function(c){ return c.raw + ' atendimentos'; } } }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: { color: '#444e62', font: { size: 11, family: "'DM Mono', monospace" } },
-        grid: { color: 'rgba(255,255,255,0.04)' }
-      },
-      x: {
-        ticks: { color: '#7a8499', font: { size: 11 } },
-        grid: { display: false }
-      }
-    }
-  }
-});
-</script><button onclick="testeSalvar()" style="position:fixed;bottom:20px;right:20px;padding:12px;background:green;color:white;">
+</script>
+<button onclick="testeSalvar()" style="position:fixed;bottom:20px;right:20px;padding:12px;background:green;color:white;">
 SALVAR
 </button>
 
