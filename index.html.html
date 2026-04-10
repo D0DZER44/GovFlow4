@@ -792,33 +792,32 @@ new Chart(document.getElementById('chartEvolucao'), {
     }
   }
 });
-</script><!-- SUPABASE -->
+</script><button onclick="testeSalvar()" style="position:fixed;bottom:20px;right:20px;padding:12px;background:green;color:white;">
+SALVAR
+</button>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// 🔌 CONEXÃO
 const supabase = window.supabase.createClient(
-  "ngpowwbzgxcxfmscyxjq",
-  "sb_publishable_5UYnKB5ucFBNg4t0j-Nuwg_7TLApNtz"
+  "SUA_URL_AQUI",
+  "SUA_KEY_AQUI"
 );
 
-// 🧪 TESTE AUTOMÁTICO
-async function teste() {
-  const { data, error } = await supabase
+async function testeSalvar() {
+  const { error } = await supabase
     .from("registros")
     .insert([
       { unidade: "Centro", atendimentos: 10, fila: 5 }
     ]);
 
   if(error){
-    console.log("Erro:", error);
+    alert("Erro");
+    console.log(error);
   } else {
-    console.log("Funcionou!");
+    alert("Salvou!");
   }
 }
-
-teste();
 </script>
 </body>
 </html>
-
